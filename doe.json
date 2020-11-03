@@ -1,0 +1,17 @@
+{
+    "learning_rate": [
+        0.0001,
+        0.01,
+        1.0
+    ],
+    "batch_size": [
+        10,
+        30,
+        100
+    ],
+    "activation_function": [
+        "relu",
+        "tanh",
+        "sigmoid"
+    ]
+}

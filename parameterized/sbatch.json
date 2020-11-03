@@ -1,0 +1,9 @@
+{
+    "ntasks": 1,
+    "cpus-per-task": 1,
+    "mem-per-cpu": "1G",
+    "partition": "express",
+    "output": "%j_%4a.log",
+    "error": "%j_%4a.log",
+    "num_same_time": 4
+}
