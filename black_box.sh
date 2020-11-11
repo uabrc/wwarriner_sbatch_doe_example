@@ -1,5 +1,5 @@
 #!/bin/bash
 
-echo "running ${@:2}"
+echo "running ${@:1}"
 sleep 5
 echo "done!"

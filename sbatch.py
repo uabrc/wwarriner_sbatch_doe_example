@@ -18,9 +18,9 @@ def generate_array_job(
         "#SBATCH --cpus-per-task={:d}".format(1),
         "#SBATCH --mem-per-cpu={:d}G".format(1),
         "#SBATCH --partition={:s}".format("express"),
-        "#SBATCH --output={:s}".format("%j_%4a.log"),
-        "#SBATCH --error={:s}".format("%j_%4a.log"),
-        "#SBATCH --array=0-{:d}%{:d}".format(treatment_count - 1, 4),  # zero based
+        "#SBATCH --output={:s}".format("%A_%4a.log"),
+        "#SBATCH --error={:s}".format("%A_%4a.log"),
+        "#SBATCH --array=1-{:d}%{:d}".format(treatment_count, 4),  # zero based
         "",
         "{:s}".format(payload),
         "",
@@ -38,11 +38,13 @@ def generate_treatments(doe_file: PurePath, output_file: PurePath) -> int:
 
     keys = parameters.keys()
     values = [[(k, v) for v in parameters[k]] for k in keys]
+    _pretty_print(values)
+    print()
     # Values looks like:
     # [
-    #   [(key_1, value_1_1), ..., (key_1, value_1_m)],
-    #   ...
-    #   [(key_n, value_n_1), ..., (key_n, value_n_m)]
+    #   [(learning_rate, 0.0001), (learning_rate, 0.01), (learning_rate, 1.0)],
+    #   [(batch_size, 10), (batch_size, 30), (batch_size, 100)],
+    #   [(activation_function, relu), (activation_function, tanh), (activation_function, sigmoid)]
     # ]
 
     generator = itertools.product(*values)
@@ -55,18 +57,25 @@ def generate_treatments(doe_file: PurePath, output_file: PurePath) -> int:
     for item in generator:
         treatment = {key: parameter for key, parameter in item}
         treatments.append(treatment)
+    _pretty_print(treatments)
+    print()
     # treatments is an array of entires that look like:
     # {
-    #   "parameter_1": value_1,
-    #   ...
-    #   "parameter_n": value_n
+    #   learning_rate: 0.0001,
+    #   batch_size: 10,
+    #   activation_function: relu
     # }
     # which form the rows of a dataframe. Keys are columns, values are entries
 
     df = pd.DataFrame(data=treatments)
     df.to_csv(str(output_file), index=False)
+    print(df.to_string())
 
     return len(df)
+
+
+def _pretty_print(v):
+    print(json.dumps(v, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":
@@ -76,5 +85,5 @@ if __name__ == "__main__":
     generate_array_job(
         payload_file=PurePath("payload.sh"),
         treatment_count=treatment_count,
-        output_file=PurePath("run.sh"),
+        output_file=PurePath("doe.sh"),
     )

@@ -10,7 +10,7 @@ def run(command: str, treatment_file: PurePath, row: int):
     line = line.replace(",", " ")
     process = "{:s} {:s}".format(command, line)
     print(process)
-    # subprocess.run(process)
+    subprocess.run(process, shell=True)
 
 
 if __name__ == "__main__":
